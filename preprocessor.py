@@ -32,10 +32,24 @@ def preprocess(data):
     df['message'] = messages
     df.drop(columns=['user_message'], inplace=True)
 
+    df['only_date'] = df['date'].dt.date
     df['Year'] = df['date'].dt.year
+    df['month_num'] = df['date'].dt.month
     df['Month'] = df['date'].dt.month_name()
     df['Day'] = df['date'].dt.day
-    df['Hour'] = df['date'].dt.hour
+    df['day_name'] = df['date'].dt.day_name()
+    df['Hour'] = df['date'].dt.hour.fillna(0).astype(int)
     df['Minute'] = df['date'].dt.minute
+
+    period = []
+    for hour in df[['day_name', 'Hour']]['Hour']:
+        if hour == 23:
+            period.append(str(hour) + "-" + str('00'))
+        elif hour == 0:
+            period.append(str('00') + "-" + str(hour + 1))
+        else:
+            period.append(str(hour) + "-" + str(hour + 1))
+
+    df['time_period'] = period
 
     return df
